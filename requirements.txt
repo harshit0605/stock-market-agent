@@ -1,0 +1,11 @@
+langgraph
+langchain
+openai
+requests
+yfinance
+numpy
+scipy
+pandas
+python-dotenv
+vaderSentiment
+
