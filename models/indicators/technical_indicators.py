@@ -3,35 +3,36 @@ from stock_market_agent.models.indicators.technical.bollinger_bands import Bolli
 from stock_market_agent.models.indicators.technical.macd import MACD
 from stock_market_agent.models.indicators.technical.rsi import RSI
 from datetime import datetime
+from stock_market_agent.models.indicators.base_indicator import BaseIndicator
+
+class IndicatorRegistry:
+    def __init__(self):
+        self._indicators = {}
+
+    def register(self, name: str, indicator: BaseIndicator):
+        self._indicators[name] = indicator
+
+    def get(self, name: str) -> BaseIndicator:
+        return self._indicators.get(name)
+    
 
 class TechnicalIndicators:
     def __init__(self, data: str):
         self._parsed_data = self._parse_data(data)
         self.prices = self._parsed_data["price"]
+        self.registry = IndicatorRegistry()
+        self._register_indicators()
+    
+    def _register_indicators(self):
+        self.registry.register("BollingerBands", BollingerBands())
+        self.registry.register("MACD", MACD())
+        self.registry.register("RSI", RSI())
+        # Register additional indicators here
 
     def calculate_indicators(self) -> Dict[str, float]:
-        # Calculate Bollinger Bands
-        bb = BollingerBands()
-        mean, upper, lower = bb.calculate(self.prices)
-
-        # Calculate MACD
-        macd = MACD()
-        macd_line, signal_line, histogram = macd.calculate(self.prices)
-
-        # Calculate RSI
-        rsi = RSI()
-        rsi_values = rsi.calculate(self.prices)
-
-        indicators_data = {
-            "Bollinger Mean": mean[-1],
-            "Bollinger Upper": upper[-1],
-            "Bollinger Lower": lower[-1],
-            "MACD Line": macd_line[-1],
-            "Signal Line": signal_line[-1],
-            "MACD Histogram": histogram[-1],
-            "RSI": rsi_values[-1]
-        }
-
+        indicators_data = {}
+        for name, indicator in self.registry._indicators.items():
+            indicators_data.update(indicator.calculate(self.prices))
         return indicators_data
 
     def _parse_data(self, data: str) -> Dict[str, List[float]]:

@@ -1,11 +1,12 @@
 import numpy as np
-from typing import List
+from typing import Dict, List
+from stock_market_agent.models.indicators.base_indicator import BaseIndicator
 
-class RSI:
+class RSI(BaseIndicator):
     def __init__(self, period: int = 14):
         self.period = period
 
-    def calculate(self, prices: List[float]) -> List[float]:
+    def calculate(self, prices: List[float]) -> Dict[str, float]:
         deltas = np.diff(prices)
         seed = deltas[:self.period+1]
         up = seed[seed >= 0].sum()/self.period
@@ -16,7 +17,6 @@ class RSI:
 
         for i in range(self.period, len(prices)):
             delta = deltas[i - 1]
-
             if delta > 0:
                 upval = delta
                 downval = 0.
@@ -30,4 +30,4 @@ class RSI:
             rs = up/down
             rsi[i] = 100. - 100./(1. + rs)
 
-        return rsi.tolist()
+        return {"RSI": rsi[-1]}
