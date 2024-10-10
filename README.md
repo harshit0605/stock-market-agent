@@ -9,12 +9,13 @@ This project is a comprehensive stock market analysis agent built using the `lan
 - **Risk Assessment**: Evaluates the risk associated with the portfolio, including beta, Sharpe ratio, and diversification.
 - **Portfolio Analysis**: Provides insights into the portfolio's value, largest holdings, and sector allocations.
 - **Final Recommendation**: Generates a comprehensive investment recommendation based on collected data and analysis.
+- **Technical Indicators**: Incorporates various technical indicators such as Bollinger Bands, MACD, and RSI for enhanced analysis.
 
 ## Agents
 
 ### Data Collection Agent
 
-Collects various types of data including stock prices, news sentiment, financial indicators, and portfolio data.
+Collects various types of data including stock prices, news sentiment, financial indicators, and portfolio data. The data collection process is now parallelized to improve efficiency.
 
 ### Historical Data Agent
 
@@ -22,7 +23,15 @@ Fetches and processes historical stock data for trend analysis and volatility ca
 
 ### Analysis Agent
 
-Performs detailed analysis on the collected data, including financial indicators and historical trends.
+Performs detailed analysis on the collected data, including financial indicators and historical trends. The analysis now includes various technical indicators for a more comprehensive evaluation.
+
+### Financial Personas
+
+Different financial personas, such as conservative investors and aggressive growth seekers, perform individual analyses on the data. Each persona provides a unique perspective based on its investment strategy.
+
+### Meta Analysis Agent
+
+A meta analysis agent critiques all the analyses performed by different financial personas and produces the final investment recommendation. This ensures a balanced and well-rounded decision-making process.
 
 ### Risk Assessment Agent
 
@@ -60,7 +69,7 @@ The historical analysis component is crucial for understanding past performance 
 
 ## Workflow
 
-The main workflow orchestrates the execution of various agents to provide a comprehensive analysis and recommendation.
+The main workflow orchestrates the execution of various agents to provide a comprehensive analysis and recommendation. The workflow now supports parallel execution of data collection and agent personas to enhance performance.
 
 ## Getting Started
 
