@@ -1,3 +1,5 @@
+import json
+import os
 import yfinance as yf
 from datetime import datetime, timedelta
 from langchain.tools import BaseTool
@@ -53,6 +55,17 @@ class HistoricalDataTool(BaseTool):
     
 
     def _run(self, ticker: str) -> str:
+
+        temp_data_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'tempData'))
+        os.makedirs(temp_data_folder, exist_ok=True)
+        output_file_path = os.path.join(temp_data_folder, "historical_data_output.txt")
+
+        if os.path.exists(output_file_path):
+            with open(output_file_path, "r") as f:
+                data = f.read()
+            return data
+        
+
         # Fetch historical data for the past 30 days
         end_date = datetime.now()
         start_date = end_date - timedelta(days=30)
@@ -65,11 +78,13 @@ class HistoricalDataTool(BaseTool):
         for date, row in stock_data.iterrows():
             data.append(f"{date.strftime('%Y-%m-%d')},{row['Close']:.2f},{int(row['Volume'])}")
         
+        with open(output_file_path, "w") as f:
+                f.write("\n".join(data))
         return "\n".join(data)
     
 # Example usage
 if __name__ == "__main__":
-    api_key = "IKPRCH1Z25YCA2SP"
+    # api_key = "IKPRCH1Z25YCA2SP"
     # tool = HistoricalDataTool(api_key=api_key)
     tool = HistoricalDataTool()
-    print(tool._run("IBM"))  # Example ticker for Reliance Industries on BSE
+    print(tool._run("AAPL"))  # Example ticker for Reliance Industries on BSE

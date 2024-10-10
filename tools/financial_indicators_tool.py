@@ -1,3 +1,5 @@
+import json
+import os
 import requests
 from langchain.tools import BaseTool
 from pydantic import Field
@@ -25,6 +27,15 @@ class FinancialIndicatorsTool(BaseTool):
             "CASH_FLOW": "Cash Flow"
         }
 
+        temp_data_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'tempData'))
+        os.makedirs(temp_data_folder, exist_ok=True)
+        output_file_path = os.path.join(temp_data_folder, "financial_indicators_output.txt")
+
+        if os.path.exists(output_file_path):
+            with open(output_file_path, "r") as f:
+                data = json.loads(f.read())
+            return data
+
         for function, description in functions.items():
             params = {
                 "function": function,
@@ -35,7 +46,7 @@ class FinancialIndicatorsTool(BaseTool):
             data = response.json()
 
             # Debugging information
-            print(f"API Response for {description}:", data)
+            print(f"API called for {description}:")
 
             if function == "OVERVIEW":
                 indicators.update({
@@ -60,10 +71,12 @@ class FinancialIndicatorsTool(BaseTool):
             elif function == "EARNINGS":
                 earnings = data.get("quarterlyEarnings", [])
                 if earnings:
+                    print("earnings", earnings[0].get("reportedEPS"))
                     indicators["EPS"] = earnings[0].get("reportedEPS")
             elif function == "BALANCE_SHEET":
                 balance_sheet = data.get("quarterlyReports", [])
                 if balance_sheet:
+                    print("balance_sheet", balance_sheet[0].get("totalLiabilities"))
                     total_liabilities = balance_sheet[0].get("totalLiabilities")
                     total_shareholder_equity = balance_sheet[0].get("totalShareholderEquity")
                     if total_liabilities and total_shareholder_equity:
@@ -71,6 +84,7 @@ class FinancialIndicatorsTool(BaseTool):
             elif function == "INCOME_STATEMENT":
                 income_statement = data.get("quarterlyReports", [])
                 if income_statement:
+                    print("grossProfit", income_statement[0].get("grossProfit"))
                     gross_profit = income_statement[0].get("grossProfit")
                     total_revenue = income_statement[0].get("totalRevenue")
                     if gross_profit and total_revenue:
@@ -78,10 +92,21 @@ class FinancialIndicatorsTool(BaseTool):
             elif function == "CASH_FLOW":
                 cash_flow = data.get("quarterlyReports", [])
                 if cash_flow:
-                    total_current_assets = cash_flow[0].get("totalCurrentAssets")
-                    total_current_liabilities = cash_flow[0].get("totalCurrentLiabilities")
-                    if total_current_assets and total_current_liabilities:
-                        indicators["Current Ratio"] = int(total_current_assets) / int(total_current_liabilities)
+                    operating_cashflow = int(cash_flow[0].get("operatingCashflow", 0))
+                    capital_expenditures = int(cash_flow[0].get("capitalExpenditures", 0))
+                    cashflow_from_investment = int(cash_flow[0].get("cashflowFromInvestment", 0))
+                    cashflow_from_financing = int(cash_flow[0].get("cashflowFromFinancing", 0))
+
+                    indicators.update({
+                        "Operating Cash Flow": operating_cashflow,
+                        "Free Cash Flow": operating_cashflow - capital_expenditures,
+                        "Cash Flow from Investing": cashflow_from_investment,
+                        "Cash Flow from Financing": cashflow_from_financing,
+                        "Net Change in Cash": operating_cashflow + cashflow_from_investment + cashflow_from_financing
+                    })
+
+        with open(output_file_path, "w") as f:
+                f.write(json.dumps(indicators, indent=4))
 
         return indicators
         

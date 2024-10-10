@@ -1,3 +1,5 @@
+import json
+import os
 import requests
 from langchain.tools import BaseTool
 
@@ -16,8 +18,24 @@ class StockPriceTool(BaseTool):
             "symbol": ticker,
             "apikey": self.api_key
         }
-        response = requests.get(self.base_url, params=params)
-        data = response.json()
+
+        temp_data_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'tempData'))
+        os.makedirs(temp_data_folder, exist_ok=True)
+        output_file_path = os.path.join(temp_data_folder, "stock_price_output.txt")
+
+        if os.path.exists(output_file_path):
+            with open(output_file_path, "r") as f:
+                data = json.loads(f.read())
+        else:
+            response = requests.get(self.base_url, params=params)
+            data = response.json()
+
+            # Write outputs to separate text files in the tempData folder
+            with open(output_file_path, "w") as f:
+                f.write(json.dumps(data, indent=4))
+                
+        # response = requests.get(self.base_url, params=params)
+        # data = response.json()
 
         if "Global Quote" in data:
             latest_price = data["Global Quote"]["05. price"]

@@ -1,9 +1,10 @@
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_openai import ChatOpenAI
 from models.custom_rules_engine import CustomRulesEngine
-from models.historical_analysis import HistoricalAnalysis
+# from stock_market_agent.tools.historical_analysis_tool import HistoricalAnalysisTool
 
-def final_recommendation_agent(state):
+def final_recommendation_node(state):
+    print("...................In final recommendation node..................")
     collected_data = state.get("collected_data", "No collected data available.")
     historical_analysis = state.get("historical_data", "No historical data available.")
     risk_report = state.get("risk_report", "No risk report available.")
@@ -44,6 +45,6 @@ def final_recommendation_agent(state):
     final_analysis = llm.invoke([HumanMessage(content=final_prompt)])
 
     return {
-        "messages": state["messages"] + [AIMessage(content=final_analysis)],
+        "messages": state["messages"] + [AIMessage(content=final_analysis.content)],
         "final_recommendation": final_analysis.content
     }

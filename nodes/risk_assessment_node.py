@@ -1,6 +1,6 @@
 from tools.portfolio_tool import PortfolioTool
 from langchain_core.messages import AIMessage
-from models.historical_analysis import HistoricalAnalysis
+from stock_market_agent.tools.historical_analysis_tool import HistoricalAnalysis
 from typing import Dict, List, Tuple
 
 class RiskAssessmentAgent:
@@ -65,7 +65,8 @@ class RiskAssessmentAgent:
         """
 
 
-def risk_assessment_agent(state):
+def risk_assessment_node(state):
+    print("...................In risk assessment node..................")
     historical_data = state["historical_data"]
     portfolio_data = state["collected_data"]["portfolio_data"]
     

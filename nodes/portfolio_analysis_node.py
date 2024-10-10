@@ -52,7 +52,8 @@ class PortfolioAnalysisAgent:
         return report
     
 
-def portfolio_analysis_agent(state):
+def portfolio_analysis_node(state):
+    print("...................In portfolio node..................")
     portfolio_data = state["collected_data"]["portfolio_data"]
     
     portfolio_agent = PortfolioAnalysisAgent(portfolio_data)

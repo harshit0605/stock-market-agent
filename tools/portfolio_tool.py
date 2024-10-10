@@ -1,8 +1,8 @@
 from langchain.tools import BaseTool
 
 class PortfolioTool(BaseTool):
-    name = "Portfolio Tool"
-    description = "Get current portfolio holdings and allocations"
+    name:str = "Portfolio Tool"
+    description:str = "Get current portfolio holdings and allocations"
 
     def _run(self) -> str:
         # In a real implementation, this would fetch data from a user's actual portfolio

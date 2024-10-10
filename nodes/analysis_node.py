@@ -1,10 +1,11 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage
 from models.custom_rules_engine import CustomRulesEngine
-from models.historical_analysis import HistoricalAnalysis
+from stock_market_agent.tools.historical_analysis_tool import HistoricalAnalysisTool
 from models.evaluation_data import EvaluationData
 
-def analysis_agent(state):
+def analysis_node(state):
+    print("...................In analysis node..................")
     collected_data = state["collected_data"]
     historical_data = state["historical_data"]
 
@@ -25,23 +26,11 @@ def analysis_agent(state):
     # }
 
     # Perform historical analysis
-    analysis = HistoricalAnalysis(historical_data)
-    trend = analysis.calculate_trend()
-    volatility = analysis.calculate_volatility()
-    support, resistance = analysis.identify_support_resistance()
-    volume_trend = analysis.volume_trend()
-    momentum = analysis.price_momentum()
+    analysis = HistoricalAnalysisTool()
+    analysis_data = analysis.run(historical_data)
 
     # Add historical analysis results to financial data 
-    financial_data.update({
-        "Price Trend": str(trend),
-        "Volatility": str(volatility),
-        "Support Level": str(support),
-        "Resistance Level": str(resistance),
-        "Volume Trend": volume_trend,
-        "Price Momentum": momentum,
-        "Current Price": str(analysis.data["price"][-1])
-    })
+    financial_data.update(analysis_data)
 
     # Create EvaluationData object
     evaluation_data = EvaluationData(financial_data, sentiment_data)
@@ -77,7 +66,10 @@ def analysis_agent(state):
     # analysis = llm.invoke([HumanMessage(content=analysis_prompt)])
 
     return {
-        "financial_data": financial_data,
-        "sentiment_data": sentiment_data,
+        # "financial_data": financial_data,
+        # "sentiment_data": sentiment_data,
         "rule_results": rule_results
     }
+
+# if __name__ == "__main__":
+#     print(analysis_node({}))
