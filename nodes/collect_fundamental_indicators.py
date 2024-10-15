@@ -8,7 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".
 
 from stock_market_agent.tools.stock_price_tool import StockPriceTool
 from stock_market_agent.tools.news_sentiment_tool import NewsSentimentTool
-from stock_market_agent.tools.financial_indicators_tool import FinancialIndicatorsTool
+from stock_market_agent.tools.fundamental_indicators_tool import FundamentalIndicatorsTool
 # from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_core.messages import HumanMessage, AIMessage
 from stock_market_agent.tools.portfolio_tool import PortfolioTool
@@ -16,8 +16,8 @@ from stock_market_agent.utils.get_api_key import get_api_key
 from dotenv import load_dotenv
 
 
-def collect_financial_indicators(state):
-    print("...................In collect_financial_indicators node..................")
+def collect_fundamental_indicators(state):
+    print("...................In collect_fundamental_indicators node..................")
     # Load environment variables from .env file
     load_dotenv()
     
@@ -31,13 +31,13 @@ def collect_financial_indicators(state):
     print(alphavantage_api_key)
 
     
-    financial_indicators_tool = FinancialIndicatorsTool(api_key=alphavantage_api_key)
-    financial_indicators = financial_indicators_tool.run(ticker.tickerId)
+    fundamental_indicators_tool = FundamentalIndicatorsTool(api_key=alphavantage_api_key)
+    fundamental_indicators = fundamental_indicators_tool.run(ticker.tickerId)
 
     # portfolio_data = PortfolioTool().run()
 
     collected_data = {
-        "financial_indicators": financial_indicators,
+        "indicators_data": fundamental_indicators,
         # "Recent News": recent_news,
         # "portfolio_data" : portfolio_data
     }
@@ -50,7 +50,7 @@ def collect_financial_indicators(state):
     # }
 
 if __name__ == "__main__":
-    collected_data = collect_financial_indicators({"ticker" : "AAPL", "messages" : ['']})
+    collected_data = collect_fundamental_indicators({"ticker" : "AAPL", "messages" : ['']})
     with open("stock_market_agent/tempData/collected_data.json", "w") as outfile:
         json.dump(collected_data, outfile, indent=4)
 

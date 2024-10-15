@@ -26,7 +26,7 @@ def create_persona_agents(llm) -> List[LLMFinancialAgent]:
             ],
             llm=llm,
             additional_data={
-                "keys": ["historical_data", "risk_report", "financial_indicators"]
+                "keys": ["historical_data", "risk_report", "indicators_data", "market_conditions", "rule_results"]
             }
         ),
         LLMFinancialAgent(
@@ -49,7 +49,7 @@ def create_persona_agents(llm) -> List[LLMFinancialAgent]:
             ],
             llm=llm,
             additional_data={
-                "keys": ["news_sentiment", "market_conditions", "financial_indicators"]
+                "keys": ["news_sentiment", "market_conditions", "indicators_data", "rule_results"]
             }
         ),
         # ... Create other agent types similarly ...

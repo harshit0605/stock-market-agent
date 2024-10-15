@@ -2,5 +2,5 @@ from typing import Dict
 
 class EvaluationData:
     def __init__(self, financial_data: Dict[str, str], sentiment_data: str):
-        self.financial_data = financial_data
+        self.indicator_data = financial_data
         self.sentiment_data = sentiment_data

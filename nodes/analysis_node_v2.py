@@ -1,20 +1,21 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage
 from models.custom_rules_engine import CustomRulesEngine
-from stock_market_agent.tools.historical_analysis_tool import HistoricalAnalysisTool
+from stock_market_agent.models.indicators.technical_indicators import TechnicalIndicators
+from stock_market_agent.models.indicators.fundamental_indicators import FundamentalIndicators
+
 from models.evaluation_data import EvaluationData
 
 def analysis_node(state):
     print("...................In analysis node..................")
-    collected_data = state["collected_data"]
     historical_data = state["historical_data"]
 
     # Extract financial data from collected_data
-    financial_data = collected_data["Financial Indicators"]
-    sentiment_data = collected_data["Sentiment"]
+    financial_indicators_data = state["indicators_data"]
+    sentiment_data = state["news_sentiment"]
     
     # Parse collected data (you'll need to implement proper parsing)
-    # financial_data = {
+    # financial_indicators_data = {
     #     "P/E Ratio": "20.5",
     #     "Short-term MA": "105",
     #     "Long-term MA": "100",
@@ -25,19 +26,33 @@ def analysis_node(state):
     #     # Add other indicators here
     # }
 
-    # Perform historical analysis
-    analysis = HistoricalAnalysisTool()
-    analysis_data = analysis.run(historical_data)
+    #----------------------Technial analysis---------------
 
-    # Add historical analysis results to financial data 
-    financial_data.update(analysis_data)
+    technical_analysis = TechnicalIndicators(historical_data)
+    technical_analysis_data = technical_analysis.calculate_indicators()
+
+    # Add technical analysis results to financial data 
+    financial_indicators_data.update(technical_analysis_data)
+    
+    #----------------------Fundamental analysis---------------
+
+    fundamental_indicator = FundamentalIndicators(historical_data)
+    fundamental_indicator_data = fundamental_indicator.calculate_indicators()
+
+    # Add technical analysis results to financial data 
+    financial_indicators_data.update(fundamental_indicator_data)
+
+    #Add current stock price to the financial indicator dict
+    financial_indicators_data.update({'stock_price' : state['stock_price']})
 
     # Create EvaluationData object
-    evaluation_data = EvaluationData(financial_data, sentiment_data)
+    evaluation_data = EvaluationData(financial_indicators_data, sentiment_data)
 
     # Apply custom rules
     rules_engine = CustomRulesEngine()
     rule_results = rules_engine.evaluate(evaluation_data)
+
+    print("In analysis node rule result",rule_results)
     
     # llm = ChatOpenAI(model="gpt-4o")
 
@@ -66,7 +81,7 @@ def analysis_node(state):
     # analysis = llm.invoke([HumanMessage(content=analysis_prompt)])
 
     return {
-        # "financial_data": financial_data,
+        "indicators_data": financial_indicators_data,
         # "sentiment_data": sentiment_data,
         "rule_results": rule_results
     }

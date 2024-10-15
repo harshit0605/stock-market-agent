@@ -5,7 +5,7 @@ from langchain.tools import BaseTool
 from pydantic import Field
 from typing import Literal
 
-class FinancialIndicatorsTool(BaseTool):
+class FundamentalIndicatorsTool(BaseTool):
     name: Literal["Financial Indicators Tool"] = Field("Financial Indicators Tool")
     description: Literal["Get key financial indicators for a given ticker symbol"] = Field("Get key financial indicators for a given ticker symbol")
     api_key: str
@@ -128,5 +128,5 @@ class FinancialIndicatorsTool(BaseTool):
 # Example usage
 if __name__ == "__main__":
     api_key = "IKPRCH1Z25YCA2SP"
-    tool = FinancialIndicatorsTool(api_key=api_key)
+    tool = FundamentalIndicatorsTool(api_key=api_key)
     print(tool._run("IBM"))  # Example ticker for Reliance Industries on BSE

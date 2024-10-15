@@ -6,7 +6,8 @@ class RSI(BaseIndicator):
     def __init__(self, period: int = 14):
         self.period = period
 
-    def calculate(self, prices: List[float]) -> Dict[str, float]:
+    def calculate(self, parsed_data: Dict[str, List[float]]) -> Dict[str, float]:
+        prices = parsed_data["price"]
         deltas = np.diff(prices)
         seed = deltas[:self.period+1]
         up = seed[seed >= 0].sum()/self.period

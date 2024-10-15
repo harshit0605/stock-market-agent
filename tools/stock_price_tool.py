@@ -39,7 +39,7 @@ class StockPriceTool(BaseTool):
 
         if "Global Quote" in data:
             latest_price = data["Global Quote"]["05. price"]
-            return f"Latest price for {ticker}: ₹{latest_price}"
+            return f"{latest_price}"
         else:
             return f"Failed to fetch data for {ticker}. Error: {data.get('Note', 'Unknown error')}"
 

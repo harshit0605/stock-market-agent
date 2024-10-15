@@ -3,7 +3,7 @@ This is the state definition for the AI.
 It defines the state of the agent and the state of the conversation.
 """
 
-from typing import Dict, List, TypedDict, Optional, Annotated
+from typing import Dict, List, TypedDict, Optional, Annotated, Union
 from operator import add
 
 from langgraph.graph import MessagesState
@@ -47,7 +47,7 @@ class AgentState2(MessagesState):
     ticker : Stocks
     stock_price: Optional[str]
     news_sentiment: Optional[str]
-    financial_indicators: Optional[str]
+    indicators_data: Optional[str]
     historical_data: Optional[str]
     collected_data: Optional[Dict[str, Dict[str, str]]]
     risk_report: Optional[str]
@@ -57,4 +57,5 @@ class AgentState2(MessagesState):
     combined_weighted_analysis: str
     market_conditions : Optional[Dict[str, str]]
     final_prediction : Optional[FinalPrediction]
+    rule_results : Dict[str, Dict[str, Union[float, str]]]
     error : Optional[str]

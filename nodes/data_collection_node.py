@@ -8,7 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".
 
 from stock_market_agent.tools.stock_price_tool import StockPriceTool
 from stock_market_agent.tools.news_sentiment_tool import NewsSentimentTool
-from stock_market_agent.tools.financial_indicators_tool import FinancialIndicatorsTool
+from stock_market_agent.tools.fundamental_indicators_tool import FundamentalIndicatorsTool
 # from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_core.messages import HumanMessage, AIMessage
 from stock_market_agent.tools.portfolio_tool import PortfolioTool
@@ -36,7 +36,7 @@ def data_collection_node(state):
     stock_price_tool = StockPriceTool(api_key=alphavantage_api_key)
     news_sentiment_tool = NewsSentimentTool(api_key=news_api_key)
     # search_tool = DuckDuckGoSearchRun()
-    financial_indicators_tool = FinancialIndicatorsTool(api_key=alphavantage_api_key)
+    fundamental_indicators_tool = FundamentalIndicatorsTool(api_key=alphavantage_api_key)
 
     price_info = stock_price_tool.run(ticker.tickerId)
     # Parse the JSON response from the sentiment tool
@@ -44,14 +44,14 @@ def data_collection_node(state):
     sentiment_info = json.loads(sentiment_info_json)
 
     # recent_news = search_tool.run(f"{ticker} stock recent news")
-    financial_indicators = financial_indicators_tool.run(ticker.tickerId)
+    fundamental_indicators = fundamental_indicators_tool.run(ticker.tickerId)
 
     # portfolio_data = PortfolioTool().run()
 
     collected_data = {
         "Stock Price": price_info,
         "Sentiment": sentiment_info,
-        "Financial Indicators": financial_indicators,
+        "Financial Indicators": fundamental_indicators,
         # "Recent News": recent_news,
         # "portfolio_data" : portfolio_data
     }

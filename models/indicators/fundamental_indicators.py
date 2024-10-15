@@ -5,9 +5,10 @@ from stock_market_agent.models.indicators.technical.rsi import RSI
 from stock_market_agent.models.indicators.technical.historical_analysis_indicator import HistoricalAnalysisIndicator
 from datetime import datetime
 from stock_market_agent.models.indicators.base_indicator import IndicatorRegistry
-   
 
-class TechnicalIndicators:
+
+
+class FundamentalIndicators:
     def __init__(self, data: str):
         self._parsed_data = self._parse_data(data)
         self.prices = self._parsed_data["price"]
@@ -15,12 +16,9 @@ class TechnicalIndicators:
         self._register_indicators()
     
     def _register_indicators(self):
-        self.registry.register("BollingerBands", BollingerBands())
-        self.registry.register("MACD", MACD())
-        self.registry.register("RSI", RSI())
-        self.registry.register("HistoricalAnalysis", HistoricalAnalysisIndicator())
-
-        # Register additional indicators here
+        # Add any future fundamental indicators 
+        # self.registry.register("FundamentalIndicators", BollingerBands())
+        pass
 
     def calculate_indicators(self) -> Dict[str, float]:
         indicators_data = {}

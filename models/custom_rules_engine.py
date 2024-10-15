@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 from models.evaluation_data import EvaluationData
 
 
@@ -31,7 +31,7 @@ class CustomRulesEngine:
         ]
     
     def pe_ratio_rule(self, data: EvaluationData) -> Tuple[str, float, str]:
-        pe_ratio = float(data.financial_data['P/E Ratio'])
+        pe_ratio = float(data.indicator_data['P/E Ratio'])
         if pe_ratio < 15:
             return "Buy", 1.0, f"Low P/E Ratio of {pe_ratio} indicates undervaluation."
         elif pe_ratio > 30:
@@ -39,8 +39,8 @@ class CustomRulesEngine:
         return "Hold", 0.5, f"P/E Ratio of {pe_ratio} is within normal range."
 
     def moving_average_rule(self, data: EvaluationData) -> Tuple[str, float, str]:
-        short_ma = float(data.financial_data['Short-term MA'])
-        long_ma = float(data.financial_data['Long-term MA'])
+        short_ma = float(data.indicator_data['Short-term MA'])
+        long_ma = float(data.indicator_data['Long-term MA'])
         difference = (short_ma - long_ma) / long_ma
         if difference > 0.05:
             return "Buy", 1.0, f"Short-term MA ({short_ma}) is above Long-term MA ({long_ma})."
@@ -49,8 +49,8 @@ class CustomRulesEngine:
         return "Hold", 0.5, "Moving Averages are neutral."
 
     def volume_spike_rule(self, data: EvaluationData) -> Tuple[str, float, str]:
-        avg_volume = float(data.financial_data['Average Volume'])
-        current_volume = float(data.financial_data['Current Volume'])
+        avg_volume = float(data.indicator_data['Average Volume'])
+        current_volume = float(data.indicator_data['Current Volume'])
         if current_volume > (1.5 * avg_volume):
             return "Buy", 1.0, f"Significant volume increase (Current: {current_volume}, Average: {avg_volume})."
         elif current_volume < (0.5 * avg_volume):
@@ -58,7 +58,7 @@ class CustomRulesEngine:
         return "Hold", 0.3, f"Normal trading volume (Current: {current_volume}, Average: {avg_volume})."
 
     def volatility_rule(self, data: EvaluationData) -> Tuple[str, float, str]:
-        volatility = float(data.financial_data['Volatility'])
+        volatility = float(data.indicator_data['Volatility'])
         if volatility > 0.2:
             return "Sell", 0.8, f"High volatility of {volatility}."
         elif volatility < 0.1:
@@ -66,8 +66,8 @@ class CustomRulesEngine:
         return "Hold", 0.5, f"Moderate volatility of {volatility}."
 
     def current_price_rule(self, data: EvaluationData) -> Tuple[str, float, str]:
-        current_price = float(data.financial_data['Current Price'])
-        average_price = float(data.financial_data['Average Price'])
+        current_price = float(data.indicator_data['stock_price'])
+        average_price = float(data.indicator_data['Average Price'])
         if current_price < average_price * 0.9:
             return "Buy", 0.7, f"Current price ({current_price}) is significantly lower than average price ({average_price})."
         elif current_price > average_price * 1.1:
@@ -75,7 +75,7 @@ class CustomRulesEngine:
         return "Hold", 0.5, f"Current price ({current_price}) is close to average price ({average_price})."
 
     def profit_margin_rule(self, data: EvaluationData) -> Tuple[str, float, str]:
-        profit_margin = float(data.financial_data['Profit Margin'])
+        profit_margin = float(data.indicator_data['Profit Margin'])
         if profit_margin > 20:
             return "Buy", 0.8, f"High profit margin of {profit_margin}%."
         elif profit_margin < 5:
@@ -83,7 +83,7 @@ class CustomRulesEngine:
         return "Hold", 0.4, f"Moderate profit margin of {profit_margin}%."
 
     def trend_rule(self, data: EvaluationData) -> Tuple[str, float, str]:
-        trend = float(data.financial_data['Price Trend'])
+        trend = float(data.indicator_data['Price Trend'])
         if trend > 0.1:
             return "Buy", 1.0, f"Positive price trend of {trend}."
         elif trend < -0.1:
@@ -91,9 +91,9 @@ class CustomRulesEngine:
         return "Hold", 0.5, f"Neutral price trend of {trend}."
 
     def support_resistance_rule(self, data: EvaluationData) -> Tuple[str, float, str]:
-        current_price = float(data.financial_data['Current Price'])
-        support = float(data.financial_data['Support Level'])
-        resistance = float(data.financial_data['Resistance Level'])
+        current_price = float(data.indicator_data['stock_price'])
+        support = float(data.indicator_data['Support Level'])
+        resistance = float(data.indicator_data['Resistance Level'])
         
         if current_price < support * 1.05:
             return "Buy", 0.8, f"Current price ({current_price}) is near support level ({support})."
@@ -113,7 +113,7 @@ class CustomRulesEngine:
         return "Hold", 0.5, f"Neutral sentiment with an average score of {average_score}."
 
     def operating_cash_flow_rule(self, data: EvaluationData) -> Tuple[str, float, str]:
-        operating_cash_flow = float(data.financial_data.get('Operating Cash Flow'))
+        operating_cash_flow = float(data.indicator_data.get('Operating Cash Flow'))
         if operating_cash_flow > 0:
             return "Buy", 0.8, f"Positive operating cash flow of {operating_cash_flow}."
         elif operating_cash_flow < 0:
@@ -121,7 +121,7 @@ class CustomRulesEngine:
         return "Hold", 0.5, f"Neutral operating cash flow of {operating_cash_flow}."
 
     def free_cash_flow_rule(self, data: EvaluationData) -> Tuple[str, float, str]:
-        free_cash_flow = float(data.financial_data['Free Cash Flow'])
+        free_cash_flow = float(data.indicator_data['Free Cash Flow'])
         if free_cash_flow > 0:
             return "Buy", 0.8, f"Positive free cash flow of {free_cash_flow}."
         elif free_cash_flow < 0:
@@ -129,7 +129,7 @@ class CustomRulesEngine:
         return "Hold", 0.5, f"Neutral free cash flow of {free_cash_flow}."
 
     def cash_flow_from_investing_rule(self, data: EvaluationData) -> Tuple[str, float, str]:
-        cash_flow_from_investing = float(data.financial_data['Cash Flow from Investing'])
+        cash_flow_from_investing = float(data.indicator_data['Cash Flow from Investing'])
         if cash_flow_from_investing < 0:
             return "Buy", 0.6, f"Negative cash flow from investing ({cash_flow_from_investing}), indicating investment in growth."
         elif cash_flow_from_investing > 0:
@@ -137,7 +137,7 @@ class CustomRulesEngine:
         return "Hold", 0.5, f"Neutral cash flow from investing ({cash_flow_from_investing})."
 
     def cash_flow_from_financing_rule(self, data: EvaluationData) -> Tuple[str, float, str]:
-        cash_flow_from_financing = float(data.financial_data['Cash Flow from Financing'])
+        cash_flow_from_financing = float(data.indicator_data['Cash Flow from Financing'])
         if cash_flow_from_financing > 0:
             return "Buy", 0.6, f"Positive cash flow from financing ({cash_flow_from_financing}), indicating raising capital."
         elif cash_flow_from_financing < 0:
@@ -145,7 +145,7 @@ class CustomRulesEngine:
         return "Hold", 0.5, f"Neutral cash flow from financing ({cash_flow_from_financing})."
 
     def net_change_in_cash_rule(self, data: EvaluationData) -> Tuple[str, float, str]:
-        net_change_in_cash = float(data.financial_data['Net Change in Cash'])
+        net_change_in_cash = float(data.indicator_data['Net Change in Cash'])
         if net_change_in_cash > 0:
             return "Buy", 0.7, f"Positive net change in cash ({net_change_in_cash})."
         elif net_change_in_cash < 0:
@@ -178,14 +178,14 @@ class CustomRulesEngine:
         # Construct the metric string
         metrics = []
         for key in metric_keys:
-            if key in data.financial_data:
-                metrics.append(f"{key}: {data.financial_data.get(key, 'N/A')}")
+            if key in data.indicator_data:
+                metrics.append(f"{key}: {data.indicator_data.get(key, 'N/A')}")
             elif key in data.sentiment_data:
                 metrics.append(f"{key}: {data.sentiment_data.get(key, 'N/A')}")
         
         return ", ".join(metrics) if metrics else "Metric not available"
 
-    def evaluate(self, data: EvaluationData) -> Dict[str, Dict[str, float]]:
+    def evaluate(self, data: EvaluationData) -> Dict[str, Dict[str, Union[float, str]]]:
         results = {
             "Buy": {"score": 0, "reasoning": []},
             "Sell": {"score": 0, "reasoning": []},

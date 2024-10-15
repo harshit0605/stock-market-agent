@@ -8,12 +8,31 @@ class MACD(BaseIndicator):
         self.long_period = long_period
         self.signal_period = signal_period
 
-    def calculate(self, prices: List[float]) -> Dict[str, float]:
+    def calculate(self, parsed_data: Dict[str, List[float]]) -> Dict[str, float]:
+        # Ensure the key is correct
+        prices = parsed_data.get("price")
+        if prices is None:
+            raise KeyError("The key 'price' is missing from parsed_data.")
+
         prices_array = np.array(prices)
+        
+        # Calculate EMAs using a more robust method
         short_ema = self._ema(prices_array, self.short_period)
         long_ema = self._ema(prices_array, self.long_period)
+        
+        # Ensure both EMAs have the same length
+        min_length = min(len(short_ema), len(long_ema))
+        short_ema = short_ema[-min_length:]
+        long_ema = long_ema[-min_length:]
+        
         macd_line = short_ema - long_ema
         signal_line = self._ema(macd_line, self.signal_period)
+        
+        # Ensure signal_line and macd_line have the same length
+        min_length = min(len(macd_line), len(signal_line))
+        macd_line = macd_line[-min_length:]
+        signal_line = signal_line[-min_length:]
+        
         macd_histogram = macd_line - signal_line
         
         return {

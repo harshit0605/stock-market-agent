@@ -6,15 +6,16 @@ from nodes.get_ticker_node import get_ticker_node
 from nodes.historical_data_node import historical_data_node
 from stock_market_agent.models.personas.financial_agent import AdaptiveWeightingSystem
 from stock_market_agent.nodes.meta_analysis_agent import MetaAnalysisLLM
-from stock_market_agent.workflows.create_agents import create_persona_agents
+from stock_market_agent.workflows.create_persona_agents import create_persona_agents
 from stock_market_agent.config.state import AgentState2
 
 from stock_market_agent.nodes.integrate_weighted_analysis import integrate_weighted_analyses
 from stock_market_agent.nodes.collect_stock_price import collect_stock_price
 from stock_market_agent.nodes.collect_news_sentiment import collect_news_sentiment
-from stock_market_agent.nodes.collect_financial_indicators import collect_financial_indicators
+from stock_market_agent.nodes.collect_fundamental_indicators import collect_fundamental_indicators
 from stock_market_agent.nodes.data_collection_node_v2 import data_collection_node
 from stock_market_agent.nodes.collect_market_conditions import collect_market_conditions
+from stock_market_agent.nodes.analysis_node_v2 import analysis_node
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -62,7 +63,7 @@ def create_workflow_graph():
     data_collection_nodes = {
         "collect_stock_price_node" : collect_stock_price,
         "sentiment_analyzer_node" : collect_news_sentiment,
-        "collect_financial_indicators_node" : collect_financial_indicators,
+        "collect_fundamental_indicators_node" : collect_fundamental_indicators,
         "historical_data_node" : historical_data_node,
         "market_conditions_node" : collect_market_conditions, 
     }
@@ -72,6 +73,7 @@ def create_workflow_graph():
         graph.add_node(node_name, node_function)
 
     graph.add_node("collect_data", data_collection_node)
+    graph.add_node("tech_fundamental_indicators_node", analysis_node)
 
     # Add agent persona nodes
     agents = create_persona_agents(llm)
@@ -86,11 +88,17 @@ def create_workflow_graph():
 
     # Add edges from START node to all data collection nodes in parallel
     # Also add an edge from each data collection node to collect node
+    # Exception being 
     graph.add_edge(START, "get_ticker_node")
     
     for node_name, node_function in data_collection_nodes.items():
         graph.add_edge("get_ticker_node", node_name)
-        graph.add_edge(node_name, "collect_data")
+        if node_name not in ['collect_stock_price_node','collect_fundamental_indicators_node']:
+            graph.add_edge(node_name, "collect_data")
+        else:
+            graph.add_edge(node_name, "tech_fundamental_indicators_node")
+
+    graph.add_edge("tech_fundamental_indicators_node", "collect_data")
 
     # Connect collect_data node to all agent persona nodes
     for agent in agents:

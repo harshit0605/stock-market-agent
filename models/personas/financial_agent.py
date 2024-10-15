@@ -34,6 +34,9 @@ class LLMFinancialAgent:
         You focus on the following key areas when analyzing stocks:
         {focus}
 
+        Rule-Based Recommendations:
+        {custom_rule_result}
+
         Given the following market data:
         {market_data}
 
@@ -49,7 +52,7 @@ class LLMFinancialAgent:
         """
 
         return PromptTemplate(
-            input_variables=["name", "traits", "strategy", "focus", "market_data"],
+            input_variables=["name", "traits", "strategy", "focus", "market_data", "custom_rule_result"],
             template=template
         )
 
@@ -59,6 +62,7 @@ class LLMFinancialAgent:
         traits_str = "\n".join(f"- {k}: {v}" for k, v in self.traits.items())
         strategy_str = "\n".join(f"- {s}" for s in self.strategy)
         focus_str = "\n".join(f"- {f}" for f in self.focus)
+        custom_rule_result = agent_state.get("rule_results", "No data available")
         
         # Extract keys from additional_data to fetch corresponding values from agent_state
         keys_to_include = self.additional_data.get("keys", [])
@@ -74,6 +78,7 @@ class LLMFinancialAgent:
             "traits": traits_str,
             "strategy": strategy_str,
             "focus": focus_str,
+            "custom_rule_result" : custom_rule_result,
             "market_data": market_data_str
         }
 

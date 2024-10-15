@@ -1,6 +1,5 @@
 from tools.historical_data_tool import HistoricalDataTool
 from tools.news_sentiment_tool import NewsSentimentTool
-from tools.financial_indicators_tool import FinancialIndicatorsTool
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_core.messages import HumanMessage, AIMessage
 import os

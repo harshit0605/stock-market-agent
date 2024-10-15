@@ -8,7 +8,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".
 
 from stock_market_agent.tools.stock_price_tool import StockPriceTool
 from stock_market_agent.tools.news_sentiment_tool import NewsSentimentTool
-from stock_market_agent.tools.financial_indicators_tool import FinancialIndicatorsTool
 # from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_core.messages import HumanMessage, AIMessage
 from stock_market_agent.tools.portfolio_tool import PortfolioTool

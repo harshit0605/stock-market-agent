@@ -1,5 +1,7 @@
 # from workflows.main_workflow import create_workflow_graph
 from workflows.personas_workflow import create_workflow_graph
+from PIL import Image
+import io
 
 def main():
     workflow = create_workflow_graph()
@@ -20,6 +22,14 @@ def main():
     # for key, value in result.items():
     #     print(f"{key}: {value}")
 
+
+# def main():
+#     workflow = create_workflow_graph()
+#     workflow.get_graph().draw_mermaid_png()
+#     image = Image.open(io.BytesIO(workflow.get_graph().draw_mermaid_png()))
+    
+#     # Display the image
+#     image.show()
 
 if __name__ == "__main__":
     main()
