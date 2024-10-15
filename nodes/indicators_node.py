@@ -6,7 +6,7 @@ from stock_market_agent.models.indicators.fundamental_indicators import Fundamen
 
 from models.evaluation_data import EvaluationData
 
-def analysis_node(state):
+def indicators_node(state):
     print("...................In analysis node..................")
     historical_data = state["historical_data"]
 

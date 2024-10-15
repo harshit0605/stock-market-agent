@@ -6,14 +6,20 @@ from stock_market_agent.config.state import AgentState2
 def integrate_weighted_analyses(state: AgentState2, adaptiveWeightObj : AdaptiveWeightingSystem) -> Dict[str, Any]:
     print("...................In integrate_weighted_analyses node..................")
 
-    decisions = {"buy": 0, "hold": 0, "sell": 0}
+    market_conditions = state.get('market_conditions',None)
+    analyses = state.get("analyses",None)
+    if market_conditions is None or analyses in [None, []]:
+        return {"combined_weighted_analysis": ""}
+    
+    
+    decisions = {"Buy": 0, "Hold": 0, "Sell": 0}
     total_confidence = 0
     individual_analyses = []
 
-    adaptiveWeightObj.update_weights(state['market_conditions'])
+    # Update weights based on the market conditions
+    adaptiveWeightObj.update_weights(market_conditions)
+    # Get the new weights
     weights = adaptiveWeightObj.weights
-
-    analyses = state.get("analyses",[])
 
     for analysis in analyses:
         agent_name = analysis['agent']
@@ -32,6 +38,9 @@ def integrate_weighted_analyses(state: AgentState2, adaptiveWeightObj : Adaptive
             "reasoning": agent_analysis['reasoning']
         })
 
+    # Sort individual analyses by weighted confidence
+    individual_analyses.sort(key=lambda x: x['weighted_confidence'], reverse=True)
+
     # Normalize decision scores
     for decision in decisions:
         decisions[decision] /= total_confidence
@@ -39,8 +48,6 @@ def integrate_weighted_analyses(state: AgentState2, adaptiveWeightObj : Adaptive
     final_decision = max(decisions, key=decisions.get)
     final_confidence = decisions[final_decision]
 
-    # Sort individual analyses by weighted confidence
-    individual_analyses.sort(key=lambda x: x['weighted_confidence'], reverse=True)
 
     # Compile reasoning summary
     reasoning_summary = f"Decision based on Adaptive weighting of the differnet agent personas: {final_decision.upper()} with confidence {final_confidence}\n"

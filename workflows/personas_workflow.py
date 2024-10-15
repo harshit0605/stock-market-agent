@@ -15,7 +15,7 @@ from stock_market_agent.nodes.collect_news_sentiment import collect_news_sentime
 from stock_market_agent.nodes.collect_fundamental_indicators import collect_fundamental_indicators
 from stock_market_agent.nodes.data_collection_node_v2 import data_collection_node
 from stock_market_agent.nodes.collect_market_conditions import collect_market_conditions
-from stock_market_agent.nodes.analysis_node_v2 import analysis_node
+from stock_market_agent.nodes.indicators_node import indicators_node
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -73,7 +73,7 @@ def create_workflow_graph():
         graph.add_node(node_name, node_function)
 
     graph.add_node("collect_data", data_collection_node)
-    graph.add_node("tech_fundamental_indicators_node", analysis_node)
+    graph.add_node("tech_fundamental_indicators_node", indicators_node)
 
     # Add agent persona nodes
     agents = create_persona_agents(llm)

@@ -57,5 +57,5 @@ class AgentState2(MessagesState):
     combined_weighted_analysis: str
     market_conditions : Optional[Dict[str, str]]
     final_prediction : Optional[FinalPrediction]
-    rule_results : Dict[str, Dict[str, Union[float, str]]]
+    rule_results : Optional[Dict[str, Dict[str, Union[float, str]]]]
     error : Optional[str]

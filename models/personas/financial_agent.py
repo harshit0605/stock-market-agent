@@ -41,7 +41,7 @@ class LLMFinancialAgent:
         {market_data}
 
         Analyze the data and provide your investment recommendation. Your response should include:
-        1. Your decision (buy, sell, or hold)
+        1. Your decision (Buy, Sell, or Hold)
         2. Your confidence level in this decision (0-1)
         3. A brief explanation of your reasoning
 
@@ -63,6 +63,10 @@ class LLMFinancialAgent:
         strategy_str = "\n".join(f"- {s}" for s in self.strategy)
         focus_str = "\n".join(f"- {f}" for f in self.focus)
         custom_rule_result = agent_state.get("rule_results", "No data available")
+        collected_data_from_prev_node = agent_state.get("collected_data", None)
+        
+        if collected_data_from_prev_node in [None, {}]:
+            return {"analyses": []}
         
         # Extract keys from additional_data to fetch corresponding values from agent_state
         keys_to_include = self.additional_data.get("keys", [])

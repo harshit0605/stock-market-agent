@@ -26,7 +26,7 @@ class MetaAnalysisLLM:
         {combined_weighted_analysis}
 
         Based on the above information, please provide:
-        1. A final investment decision (buy, sell, or hold)
+        1. A final investment decision (Buy, Sell, or Hold)
         2. A confidence level for this decision (0-1)
         3. A comprehensive reasoning for your decision, taking into account the various perspectives and any conflicts or agreements between the agents
         4. Any additional insights or considerations that might be valuable for the investment decision
@@ -47,9 +47,14 @@ class MetaAnalysisLLM:
             ) -> Dict[str, Any]:
         
         print(f"...................In Meta analysis node..................")
-        market_data = state["collected_data"]
-        market_conditions = state["market_conditions"]
-        combined_weighted_analysis = state["combined_weighted_analysis"] 
+        market_data = state.get("collected_data",None)
+        market_conditions = state.get("market_conditions", None)
+        combined_weighted_analysis = state.get("combined_weighted_analysis", None)
+
+        if market_data is None or market_conditions is None or combined_weighted_analysis in [None, ""]:
+            return {
+                    "final_prediction": {}
+                }
         
         market_data_str = "\n".join(f"- {k}: {v}" for k, v in market_data.items())
         market_conditions_str = "\n".join(f"- {k}: {v}" for k, v in market_conditions.items())
